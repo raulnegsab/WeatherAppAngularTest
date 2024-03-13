@@ -5,6 +5,7 @@ import {HttpClient} from '@angular/common/http';
 import {CurrentConditions} from './current-conditions/current-conditions.type';
 import {ConditionsAndZip} from './conditions-and-zip.type';
 import {Forecast} from './forecasts-list/forecast.type';
+import { LocationService } from './location.service';
 
 @Injectable()
 export class WeatherService {
@@ -14,7 +15,15 @@ export class WeatherService {
   static ICON_URL = 'https://raw.githubusercontent.com/udacity/Sunshine-Version-2/sunshine_master/app/src/main/res/drawable-hdpi/';
   private currentConditions = signal<ConditionsAndZip[]>([]);
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private locService: LocationService) { 
+    
+
+    locService.locations$.subscribe(zips => {
+      this.currentConditions.set([]);
+      zips.forEach(loc => this.addCurrentConditions(loc));
+    });
+
+  }
 
   addCurrentConditions(zipcode: string): void {
     // Here we make a request to get the current conditions data from the API. Note the use of backticks and an expression to insert the zipcode
