@@ -1,0 +1,21 @@
+.tab {
+background-color:rgb(71, 71, 237);
+color: white;
+}
+
+.selected {
+    background-color: rgb(110, 110, 255) !important;
+}
+
+.flex-row {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .flex-col {
+    flex: 0 0 15%; 
+    border-color: white;
+    border: 1px solid black;
+    margin-right: 10px;
+    max-height: 20px;
+  }

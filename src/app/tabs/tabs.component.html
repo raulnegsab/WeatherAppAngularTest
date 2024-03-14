@@ -1,0 +1,9 @@
+<div class="flex-row">
+
+  <div class="tab flex-col" *ngFor="let tab of tabs; trackById"  >
+   <div style="margin-left: 10px;"> TITLE (0000000) <span class="close" (click)="handleRemove(tab)" style="color:white !important">X</span> </div>
+  </div>
+</div>
+<div class="row" [innerHtml]="selectedHTML">
+
+</div>

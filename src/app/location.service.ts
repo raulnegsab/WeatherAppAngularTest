@@ -18,17 +18,20 @@ export class LocationService {
 
   constructor() {
     let locString = localStorage.getItem(LOCATIONS);
-    //if (locString)
-      //this.locations = JSON.parse(locString);
+    if (locString)
+      this.locations.next(JSON.parse(locString));
   }
 
 
 
   addLocation(zipcode : string) {
 
-    var x = []
+    var x: string[] = []
 
     this.locations.subscribe(v => {x = [...v]})
+
+    if(x.includes(zipcode))
+        return;
 
     this.locations.next([...x, zipcode]);
    // localStorage.setItem(LOCATIONS, JSON.stringify(this.locations));

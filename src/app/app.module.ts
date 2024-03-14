@@ -13,6 +13,7 @@ import {RouterModule} from "@angular/router";
 import {routing} from "./app.routing";
 import {HttpClientModule} from "@angular/common/http";
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { TabsComponent } from './tabs/tabs.component';
 import { environment } from '../environments/environment';
 
 @NgModule({
@@ -21,7 +22,8 @@ import { environment } from '../environments/environment';
     ZipcodeEntryComponent,
     ForecastsListComponent,
     CurrentConditionsComponent,
-    MainPageComponent
+    MainPageComponent,
+    TabsComponent,
   ],
   imports: [
     BrowserModule,
