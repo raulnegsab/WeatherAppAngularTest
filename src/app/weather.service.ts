@@ -6,6 +6,7 @@ import {CurrentConditions} from './current-conditions/current-conditions.type';
 import {ConditionsAndZip} from './conditions-and-zip.type';
 import {Forecast} from './forecasts-list/forecast.type';
 import { LocationService } from './location.service';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 @Injectable()
 export class WeatherService {
@@ -14,6 +15,7 @@ export class WeatherService {
   static APPID = '5a4b2d457ecbef9eb2a71e480b947604';
   static ICON_URL = 'https://raw.githubusercontent.com/udacity/Sunshine-Version-2/sunshine_master/app/src/main/res/drawable-hdpi/';
   private currentConditions = signal<ConditionsAndZip[]>([]);
+  public currentData = toObservable(this.currentConditions)
 
   constructor(private http: HttpClient, private locService: LocationService) { 
     

@@ -1,9 +1,9 @@
-<div class="flex-row">
+<div class="grid-container">
 
-  <div class="tab flex-col" *ngFor="let tab of tabs; trackById"  >
-   <div style="margin-left: 10px;"> TITLE (0000000) <span class="close" (click)="handleRemove(tab)" style="color:white !important">X</span> </div>
+  <div class="tab grid-item" *ngFor="let tab of tabs; trackById"  >
+   <div (click)="handleSelect(tab)" style="margin-left: 10px;"> {{tab.title}} ({{tab.id}}) <span class="close" (click)="handleRemove(tab)" style="color:white !important">X</span> </div>
   </div>
 </div>
-<div class="row" [innerHtml]="selectedHTML">
+<div class="row tab-container" [innerHtml]="selectedHTML">
 
 </div>

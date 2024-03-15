@@ -25,42 +25,60 @@ export class CurrentConditionsComponent  {
 
   constructor() {
 
+  
     
-    this.locationService.locations$.subscribe(zips => {
-      
+  
+        
+        
+          this.weatherService.currentData.subscribe(loc => {
 
+            this.tabs = []
+            loc.forEach(val => {
+              var tab: tab = {id: val.zip, title: val.data.name.replace(/"/g, ''), innerHtml: this.prepareDataExample(val), onRemove: this.RemoveLogic.bind(this)}; 
+              this.tabs.push(tab);
+            })
 
+            console.log(this.tabs)
 
+            
+          
+          })
 
-    });
+       
 
-
+          
   }
 
 
   RemoveLogic(tab: tab) {
     console.log(tab)
+    this.locationService.removeLocation(tab.id);
   }
 
+prepareDataExample(location: ConditionsAndZip): string {
 
+  var url = this.weatherService.getWeatherIcon(location.data.weather[0].id)
 
- x: string = `<div (click)="showForecast(location.zip)>
-  <h3>{{location.data.name}} ({{location.zip}})</h3>
-  <h4>Current conditions: {{location.data.weather[0].main}}</h4>
+  var template: string = `<div class="well flex" (click)="showForecast('${location.zip.replace(/"/g, '')}')">
+  <h3>${location.data.name} (${location.zip})</h3>
+  <h4>Current conditions: ${location.data.weather[0].main}</h4>
   <h4>Temperatures today:</h4>
   <p>
-    Current {{location.data.main.temp | number:'.0-0'}}
-    - Max {{location.data.main.temp_max | number:'.0-0'}}
-    - Min {{location.data.main.temp_min | number:'.0-0'}}
+    Current ${Math.round(location.data.main.temp).toString() }
+    - Max ${Math.round(location.data.main.temp_max).toString() }
+    - Min ${Math.round(location.data.main.temp_min).toString() }
   </p>
   <p>
-    <a [routerLink]="['/forecast', location.zip]" >Show 5-day forecast for {{location.data.name}}</a>
+    <a [routerLink]="['/forecast', '${location.zip}']" >Show 5-day forecast for ${location.data.name}</a>
   </p>
+  <div>
+  <img src="${url}">
 </div>
-<div>
-  <img [src]="weatherService.getWeatherIcon(location.data.weather[0].id)">
 </div>`
+  return template;
+}
 
+ 
 
 
 }

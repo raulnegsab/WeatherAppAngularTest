@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, Signal, inject } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, Signal, SimpleChanges, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ConditionsAndZip } from 'app/conditions-and-zip.type';
 import { tab } from './tabs.type';
@@ -10,32 +10,28 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
   templateUrl: './tabs.component.html',
   styleUrl: './tabs.component.css'
 })
-export class TabsComponent implements OnInit  {
+export class TabsComponent implements OnChanges  {
 
   @Input() tabs: tab[];
   @Output() tabsChange: EventEmitter<tab[]> = new EventEmitter();
 
-  ngOnInit(): void {
-    console.log(this.tabs)
+  ngOnChanges(changes: SimpleChanges): void {
+    
+    if(this.tabs.length > 0 && this.selectedHTML == '' && this.selectedID == "") {
+      console.log("Here")
+      this.selectedHTML = this.sanitizeHtml(this.tabs[0].innerHtml);
+      this.selectedID = this.tabs[0].id;
+    }
+    
   }
 
 
   protected selectedHTML: SafeHtml = ""
-  protected selectedZip: string = ""
+  protected selectedID: string = ""
  
 
   constructor(private sanitizer: DomSanitizer) {
     
-  }
-
-  SelectTab(selID: string) {
-    this.tabs.forEach(tab => {
-      if(tab.id == selID) {
-        this.selectedZip = selID;
-        this.selectedHTML = this.sanitizeHtml(tab.innerHtml);
-      }
-    })
-
   }
 
 
@@ -53,15 +49,27 @@ export class TabsComponent implements OnInit  {
 
     var newTabs = this.tabs.filter(v => v.id != tab.id);
 
+    if(tab.id == this.selectedID) {
+        this.selectedID = ''
+        this.selectedHTML = ''
+    }
+
     this.tabsChange.emit(newTabs);
 
     if (typeof tab.onRemove === "function") {
       tab.onRemove(tab);
     }
 
-    
 
+  }
 
+  handleSelect(tab: tab) {
+    if(tab.id == this.selectedID) 
+    return;
+
+    console.log("selected: " + tab.title)
+    this.selectedID = tab.id
+    this.selectedHTML = this.sanitizeHtml(tab.innerHtml)
 
   }
 

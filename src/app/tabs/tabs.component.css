@@ -7,15 +7,13 @@ color: white;
     background-color: rgb(110, 110, 255) !important;
 }
 
-.flex-row {
-    display: flex;
-    flex-wrap: wrap;
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Creates three columns of equal width */
+    gap: 8px; /* Optional: Adjust based on your needs */
   }
-
-  .flex-col {
-    flex: 0 0 15%; 
-    border-color: white;
-    border: 1px solid black;
-    margin-right: 10px;
-    max-height: 20px;
+  
+  .grid-item {
+    /* Styling for your items */
+    padding: 8px; /* Optional: Adjust based on your needs */
   }
