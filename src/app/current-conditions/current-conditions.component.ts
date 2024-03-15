@@ -1,4 +1,4 @@
-import {Component, inject, Signal} from '@angular/core';
+import {Component, inject, Signal, TemplateRef, ViewChild} from '@angular/core';
 import {WeatherService} from "../weather.service";
 import {LocationService} from "../location.service";
 import {Router} from "@angular/router";
@@ -16,6 +16,7 @@ export class CurrentConditionsComponent  {
   private router = inject(Router);
   protected locationService = inject(LocationService);
   protected currentConditionsByZip: Signal<ConditionsAndZip[]> = this.weatherService.getCurrentConditions();
+  @ViewChild('currentWeather') weatherTemplate: TemplateRef<any>;
 
   protected tabs: tab[] = [{id: '00999', title:"Check", innerHtml:"<div></div>", onRemove: this.RemoveLogic}, {id: '00988', title:"Check", innerHtml:"<div></div>", onRemove: this.RemoveLogic }]
 
@@ -59,7 +60,8 @@ prepareDataExample(location: ConditionsAndZip): string {
 
   var url = this.weatherService.getWeatherIcon(location.data.weather[0].id)
 
-  var template: string = `<div class="well flex" (click)="showForecast('${location.zip.replace(/"/g, '')}')">
+  var template: string = `<ng-template #currentWeather let-id="${location.zip}" let-showForecast="showForecast">
+  <div class="well flex" (click)="showForecast('${location.zip.replace(/"/g, '')}')">
   <h3>${location.data.name} (${location.zip})</h3>
   <h4>Current conditions: ${location.data.weather[0].main}</h4>
   <h4>Temperatures today:</h4>
@@ -69,12 +71,14 @@ prepareDataExample(location: ConditionsAndZip): string {
     - Min ${Math.round(location.data.main.temp_min).toString() }
   </p>
   <p>
-    <a [routerLink]="['/forecast', '${location.zip}']" >Show 5-day forecast for ${location.data.name}</a>
+    <a href='./forecast/${location.zip}' >Show 5-day forecast for ${location.data.name}</a>
   </p>
   <div>
   <img src="${url}">
 </div>
-</div>`
+</div>
+</ng-template>
+`
   return template;
 }
 
