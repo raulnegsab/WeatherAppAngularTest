@@ -7,7 +7,6 @@ export const LOCATIONS : string = "locations";
 @Injectable({providedIn: 'root'})
 export class LocationService {
 
- // locations : string[] = [];
 
  private locations = new BehaviorSubject<string[]>([]);
 
@@ -17,9 +16,7 @@ export class LocationService {
 
 
   constructor() {
-    let locString = localStorage.getItem(LOCATIONS);
-    if (locString)
-      this.locations.next(JSON.parse(locString));
+  
   }
 
 

@@ -8,6 +8,8 @@ import {Forecast} from './forecasts-list/forecast.type';
 import { LocationService } from './location.service';
 import { toObservable } from '@angular/core/rxjs-interop';
 
+export const CONDITIONS : string = "conditions";
+
 @Injectable()
 export class WeatherService {
 
@@ -16,6 +18,7 @@ export class WeatherService {
   static ICON_URL = 'https://raw.githubusercontent.com/udacity/Sunshine-Version-2/sunshine_master/app/src/main/res/drawable-hdpi/';
   private currentConditions = signal<ConditionsAndZip[]>([]);
   public currentData = toObservable(this.currentConditions)
+
 
   constructor(private http: HttpClient, private locService: LocationService) { 
     
@@ -28,9 +31,52 @@ export class WeatherService {
   }
 
   addCurrentConditions(zipcode: string): void {
+
+    //cache check
+    let LocationCache = localStorage.getItem(CONDITIONS);
+    let condData = LocationCache ? JSON.parse(LocationCache).data : [];
+    let exists: boolean = false;
+    let conditionReturn: ConditionsAndZip;
+    let validationTime = null;
+
+    condData.forEach((v:any) => {
+
+      if(v.condition.zip == zipcode) {
+        exists = true
+
+        conditionReturn = v.condition;
+        validationTime = new Date(v.validThru);
+        
+      }
+
+    }); 
+
+    //if cached then dont run http request
+    if(exists && validationTime > new Date() ) {
+      this.currentConditions.update(conditions => {
+
+
+         return [...conditions, {...conditionReturn}] 
+        
+        } )
+    }
+
+    else {
+
     // Here we make a request to get the current conditions data from the API. Note the use of backticks and an expression to insert the zipcode
     this.http.get<CurrentConditions>(`${WeatherService.URL}/weather?zip=${zipcode},us&units=imperial&APPID=${WeatherService.APPID}`)
-      .subscribe(data => this.currentConditions.update(conditions => [...conditions, {zip: zipcode, data}]));
+      .subscribe(data => this.currentConditions.update(conditions => {
+
+        //update cache                                                                                                       //2 hours 
+        condData.push({ condition: {zip: zipcode, data}, validThru: new Date(new Date().getTime() + this.minutesOrSeconds('minutes', 120)) } ) // this.minutesOrSeconds('seconds', 30)
+        localStorage.setItem(CONDITIONS, JSON.stringify({ data: condData }));
+
+         return [...conditions, {zip: zipcode, data}] 
+        
+        } ));
+
+
+      }
   }
 
   removeCurrentConditions(zipcode: string) {
@@ -41,6 +87,9 @@ export class WeatherService {
       }
       return conditions;
     })
+
+
+
   }
 
   getCurrentConditions(): Signal<ConditionsAndZip[]> {
@@ -70,4 +119,26 @@ export class WeatherService {
       return WeatherService.ICON_URL + "art_clear.png";
   }
 
+
+
+
+  minutesOrSeconds(type: string, amount: number) {
+
+    if(type.toLowerCase() == 'minutes') {
+      return amount * 60 * 1000
+    }
+    else if (type.toLowerCase() == 'seconds') {
+        return amount * 1000
+    }
+    else {
+      return 0;
+    }
+
+
+  }
+
+
 }
+
+
+

@@ -18,7 +18,7 @@ export class TabsComponent implements OnChanges  {
   ngOnChanges(changes: SimpleChanges): void {
     
     if(this.tabs.length > 0 && this.selectedHTML == '' && this.selectedID == "") {
-      console.log("Here")
+     // console.log("Here")
       this.selectedHTML = this.sanitizeHtml(this.tabs[0].innerHtml);
       this.selectedID = this.tabs[0].id;
     }
@@ -67,7 +67,7 @@ export class TabsComponent implements OnChanges  {
     if(tab.id == this.selectedID) 
     return;
 
-    console.log("selected: " + tab.title)
+    //console.log("selected: " + tab.title)
     this.selectedID = tab.id
     this.selectedHTML = this.sanitizeHtml(tab.innerHtml)
 

@@ -39,7 +39,7 @@ export class CurrentConditionsComponent  {
               this.tabs.push(tab);
             })
 
-            console.log(this.tabs)
+           // console.log(this.tabs)
 
             
           
@@ -52,7 +52,7 @@ export class CurrentConditionsComponent  {
 
 
   RemoveLogic(tab: tab) {
-    console.log(tab)
+    //console.log(tab)
     this.locationService.removeLocation(tab.id);
   }
 
