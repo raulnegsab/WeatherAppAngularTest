@@ -1,19 +1,24 @@
 .tab {
-background-color:rgb(71, 71, 237);
+background-color:rgb(92, 92, 181);
 color: white;
+cursor: pointer;
 }
 
 .selected {
-    background-color: rgb(110, 110, 255) !important;
+    background-color: rgb(98, 98, 148) !important;
 }
 
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(4, 1fr); /* Creates three columns of equal width */
-    gap: 8px; /* Optional: Adjust based on your needs */
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 8px; 
   }
   
   .grid-item {
-    /* Styling for your items */
-    padding: 8px; /* Optional: Adjust based on your needs */
+    padding: 8px; 
   }
+
+.tab-container {
+    padding: 50px;
+    border: 1px solid black;
+}

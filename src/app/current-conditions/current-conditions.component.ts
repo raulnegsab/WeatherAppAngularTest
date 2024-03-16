@@ -60,8 +60,9 @@ prepareDataExample(location: ConditionsAndZip): string {
 
   var url = this.weatherService.getWeatherIcon(location.data.weather[0].id)
 
-  var template: string = `<ng-template #currentWeather let-id="${location.zip}" let-showForecast="showForecast">
-  <div class="well flex" (click)="showForecast('${location.zip.replace(/"/g, '')}')">
+  var template: string = `
+  <div class="well row-flex" onclick="window.location.href='./forecast/${location.zip.replace(/"/g, '')}'">
+  <div class='col-flex'>
   <h3>${location.data.name} (${location.zip})</h3>
   <h4>Current conditions: ${location.data.weather[0].main}</h4>
   <h4>Temperatures today:</h4>
@@ -73,11 +74,11 @@ prepareDataExample(location: ConditionsAndZip): string {
   <p>
     <a href='./forecast/${location.zip}' >Show 5-day forecast for ${location.data.name}</a>
   </p>
-  <div>
+  </div>
+  <div class='col-flex'>
   <img src="${url}">
 </div>
 </div>
-</ng-template>
 `
   return template;
 }

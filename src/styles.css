@@ -8,3 +8,16 @@ body {
   display: flex;
   justify-content: space-between;
 }
+
+.row-flex {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+.col-flex {
+  flex: 1; /* Flex-grow to fill the space */
+  padding-right: 15px; /* Bootstrap usually has 15px padding */
+  padding-left: 15px; /* Bootstrap usually has 15px padding */
+}

@@ -1,6 +1,6 @@
 <div class="grid-container">
 
-  <div class="tab grid-item" *ngFor="let tab of tabs; trackById"  >
+  <div [class.selected]="tab.id == selectedID" class="tab grid-item" *ngFor="let tab of tabs; trackById"  >
    <div (click)="handleSelect(tab)" style="margin-left: 10px;"> {{tab.title}} ({{tab.id}}) <span class="close" (click)="handleRemove(tab)" style="color:white !important">X</span> </div>
   </div>
 </div>
