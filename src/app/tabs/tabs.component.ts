@@ -1,6 +1,4 @@
 import { Component, EventEmitter, Input, OnChanges, Output, Signal, SimpleChanges, inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { ConditionsAndZip } from 'app/conditions-and-zip.type';
 import { tab } from './tabs.type';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
@@ -15,22 +13,24 @@ export class TabsComponent implements OnChanges  {
   @Input() tabs: tab[];
   @Output() tabsChange: EventEmitter<tab[]> = new EventEmitter();
 
-  ngOnChanges(changes: SimpleChanges): void {
-    
-    if(this.tabs.length > 0 && this.selectedHTML == '' && this.selectedID == "") {
-     // console.log("Here")
-      this.selectedHTML = this.sanitizeHtml(this.tabs[0].innerHtml);
-      this.selectedID = this.tabs[0].id;
-    }
-    
-  }
-
-
   protected selectedHTML: SafeHtml = ""
   protected selectedID: string = ""
+
+ 
+
  
 
   constructor(private sanitizer: DomSanitizer) {
+    
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    
+    //if the selected tab gets removed set the first tab in the array as the selected tab
+    if(this.tabs.length > 0 && this.selectedHTML == '' && this.selectedID == "") {
+      this.selectedHTML = this.sanitizeHtml(this.tabs[0].innerHtml);
+      this.selectedID = this.tabs[0].id;
+    }
     
   }
 
@@ -43,9 +43,8 @@ export class TabsComponent implements OnChanges  {
     return item.id;
   }
 
-  handleRemove(tab: tab) {
 
-   
+  handleRemove(tab: tab) {
 
     var newTabs = this.tabs.filter(v => v.id != tab.id);
 
@@ -67,7 +66,6 @@ export class TabsComponent implements OnChanges  {
     if(tab.id == this.selectedID) 
     return;
 
-    //console.log("selected: " + tab.title)
     this.selectedID = tab.id
     this.selectedHTML = this.sanitizeHtml(tab.innerHtml)
 

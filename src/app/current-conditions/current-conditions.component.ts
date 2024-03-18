@@ -16,9 +16,8 @@ export class CurrentConditionsComponent  {
   private router = inject(Router);
   protected locationService = inject(LocationService);
   protected currentConditionsByZip: Signal<ConditionsAndZip[]> = this.weatherService.getCurrentConditions();
-  @ViewChild('currentWeather') weatherTemplate: TemplateRef<any>;
 
-  protected tabs: tab[] = [{id: '00999', title:"Check", innerHtml:"<div></div>", onRemove: this.RemoveLogic}, {id: '00988', title:"Check", innerHtml:"<div></div>", onRemove: this.RemoveLogic }]
+  protected tabs: tab[] = [] //
 
   showForecast(zipcode : string){
     this.router.navigate(['/forecast', zipcode])
@@ -26,37 +25,27 @@ export class CurrentConditionsComponent  {
 
   constructor() {
 
-  
-    
-  
-        
-        
           this.weatherService.currentData.subscribe(loc => {
 
             this.tabs = []
-            loc.forEach(val => {
+            loc.forEach(val => {                                                                                            //Code that will run when the tab is removed. Its not necessary for removing the tab.
               var tab: tab = {id: val.zip, title: val.data.name.replace(/"/g, ''), innerHtml: this.prepareDataExample(val), onRemove: this.RemoveLogic.bind(this)}; 
               this.tabs.push(tab);
             })
-
-           // console.log(this.tabs)
-
             
-          
-          })
-
-       
-
-          
+          });
+ 
   }
 
 
   RemoveLogic(tab: tab) {
-    //console.log(tab)
     this.locationService.removeLocation(tab.id);
   }
 
 prepareDataExample(location: ConditionsAndZip): string {
+
+  //i turned the old design as the HTML used for the tabs.
+  //It can however be any HTML that would pass a DOM Sanitizer for the tabs to show.
 
   var url = this.weatherService.getWeatherIcon(location.data.weather[0].id)
 

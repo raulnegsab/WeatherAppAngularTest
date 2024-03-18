@@ -55,7 +55,7 @@ export class WeatherService {
 
     }); 
 
-    //if cached then dont run http request
+    //if cached and not expired then dont run http request
     if(exists && validationTime > new Date() ) {
       this.currentConditions.update(conditions => { return [...conditions, {...conditionReturn}]  } )
     }
@@ -117,6 +117,7 @@ export class WeatherService {
 
     }); 
 
+    //if cached and not expired then dont run http request
     if(exists && validationTime > new Date() ) {
 
 
@@ -130,7 +131,7 @@ export class WeatherService {
       return this.http.get<Forecast>(`${WeatherService.URL}/forecast/daily?zip=${zipcode},us&units=imperial&cnt=5&APPID=${WeatherService.APPID}`).pipe(
         tap(data => {
 
-        //cache
+        //cache clean and update
         let newForecastData = forecastData.filter((v:any) => v.zip != zipcode);
         newForecastData.push({zip: zipcode, forecast: data, validThru: new Date(new Date().getTime() + this.cacheTime) })
         localStorage.setItem(FORECASTS, JSON.stringify({data: newForecastData}))
@@ -163,7 +164,8 @@ export class WeatherService {
 
 
 
-
+  //used to customize how much time will be set 
+  //from the current time for use as the expiration time of the cached data.
   minutesOrSeconds(type: string, amount: number): number {
 
     if(type.toLowerCase() == 'minutes') {

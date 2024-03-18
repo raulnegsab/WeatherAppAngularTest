@@ -26,7 +26,7 @@ export class LocationService {
         return;
 
     this.locations.next([...x, zipcode]);
-   // localStorage.setItem(LOCATIONS, JSON.stringify(this.locations));
+   
     
   }
 
@@ -36,14 +36,11 @@ export class LocationService {
 
     this.locations.subscribe(v => {x = [...v]})
 
-   // this.locations.next([...x, zipcode]);
-
     let index = x.indexOf(zipcode);
     var zipcodeList = [...x]
     if (index !== -1){
       zipcodeList.splice(index, 1);
       this.locations.next(zipcodeList)
-    //  localStorage.setItem(LOCATIONS, JSON.stringify(this.locations));
      
     }
   }
