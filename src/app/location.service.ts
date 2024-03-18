@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import {WeatherService} from "./weather.service";
 import { BehaviorSubject, Observable } from 'rxjs';
 
 export const LOCATIONS : string = "locations";
@@ -9,12 +8,8 @@ export class LocationService {
 
 
  private locations = new BehaviorSubject<string[]>([]);
-
- 
  get locations$(): Observable<string[]> { return this.locations.asObservable() } 
   
-
-
   constructor() {
   
   }
