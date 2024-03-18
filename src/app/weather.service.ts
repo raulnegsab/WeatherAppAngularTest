@@ -1,5 +1,5 @@
 import {Injectable, Signal, signal} from '@angular/core';
-import {Observable} from 'rxjs';
+import {Observable, of} from 'rxjs';
 
 import {HttpClient} from '@angular/common/http';
 import {CurrentConditions} from './current-conditions/current-conditions.type';
@@ -7,17 +7,21 @@ import {ConditionsAndZip} from './conditions-and-zip.type';
 import {Forecast} from './forecasts-list/forecast.type';
 import { LocationService } from './location.service';
 import { toObservable } from '@angular/core/rxjs-interop';
+import { tap } from 'rxjs/operators';
 
 export const CONDITIONS : string = "conditions";
+export const FORECASTS : string = "forecasts";
 
 @Injectable()
 export class WeatherService {
 
-  static URL = 'http://api.openweathermap.org/data/2.5';
+  static URL = 'https://api.openweathermap.org/data/2.5';
   static APPID = '5a4b2d457ecbef9eb2a71e480b947604';
   static ICON_URL = 'https://raw.githubusercontent.com/udacity/Sunshine-Version-2/sunshine_master/app/src/main/res/drawable-hdpi/';
   private currentConditions = signal<ConditionsAndZip[]>([]);
   public currentData = toObservable(this.currentConditions)
+
+  cacheTime: number =  this.minutesOrSeconds('minutes', 120); //2 hours  this.minutesOrSeconds('seconds', 30)
 
 
   constructor(private http: HttpClient, private locService: LocationService) { 
@@ -53,12 +57,7 @@ export class WeatherService {
 
     //if cached then dont run http request
     if(exists && validationTime > new Date() ) {
-      this.currentConditions.update(conditions => {
-
-
-         return [...conditions, {...conditionReturn}] 
-        
-        } )
+      this.currentConditions.update(conditions => { return [...conditions, {...conditionReturn}]  } )
     }
 
     else {
@@ -67,9 +66,10 @@ export class WeatherService {
     this.http.get<CurrentConditions>(`${WeatherService.URL}/weather?zip=${zipcode},us&units=imperial&APPID=${WeatherService.APPID}`)
       .subscribe(data => this.currentConditions.update(conditions => {
 
-        //update cache                                                                                                       //2 hours 
-        condData.push({ condition: {zip: zipcode, data}, validThru: new Date(new Date().getTime() + this.minutesOrSeconds('minutes', 120)) } ) // this.minutesOrSeconds('seconds', 30)
-        localStorage.setItem(CONDITIONS, JSON.stringify({ data: condData }));
+        //update cache   
+        let newConditionData = condData.filter((v:any) => v.condition.zip != zipcode);                                                                                                    //2 hours 
+        newConditionData.push({ condition: {zip: zipcode, data}, validThru: new Date(new Date().getTime() + this.cacheTime) } )
+        localStorage.setItem(CONDITIONS, JSON.stringify({ data: newConditionData }));
 
          return [...conditions, {zip: zipcode, data}] 
         
@@ -97,8 +97,50 @@ export class WeatherService {
   }
 
   getForecast(zipcode: string): Observable<Forecast> {
-    // Here we make a request to get the forecast data from the API. Note the use of backticks and an expression to insert the zipcode
-    return this.http.get<Forecast>(`${WeatherService.URL}/forecast/daily?zip=${zipcode},us&units=imperial&cnt=5&APPID=${WeatherService.APPID}`);
+
+    //cache check
+    let cache = localStorage.getItem(FORECASTS);
+    let forecastData = cache ? JSON.parse(cache).data : [];
+    let exists: boolean = false;
+    let forecastReturn: Forecast;
+    let validationTime = null;
+
+    forecastData.forEach((v:any) => {
+
+      if(v.zip == zipcode) {
+        exists = true
+
+        forecastReturn = v.forecast;
+        validationTime = new Date(v.validThru);
+        
+      }
+
+    }); 
+
+    if(exists && validationTime > new Date() ) {
+
+
+      let observe: Observable<Forecast> = of(forecastReturn)
+
+      return observe;
+    }
+    else {
+   
+      // Here we make a request to get the forecast data from the API. Note the use of backticks and an expression to insert the zipcode
+      return this.http.get<Forecast>(`${WeatherService.URL}/forecast/daily?zip=${zipcode},us&units=imperial&cnt=5&APPID=${WeatherService.APPID}`).pipe(
+        tap(data => {
+
+        //cache
+        let newForecastData = forecastData.filter((v:any) => v.zip != zipcode);
+        newForecastData.push({zip: zipcode, forecast: data, validThru: new Date(new Date().getTime() + this.cacheTime) })
+        localStorage.setItem(FORECASTS, JSON.stringify({data: newForecastData}))
+
+              })
+
+      )
+    }
+
+
 
   }
 
@@ -122,7 +164,7 @@ export class WeatherService {
 
 
 
-  minutesOrSeconds(type: string, amount: number) {
+  minutesOrSeconds(type: string, amount: number): number {
 
     if(type.toLowerCase() == 'minutes') {
       return amount * 60 * 1000
