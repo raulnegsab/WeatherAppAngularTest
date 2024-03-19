@@ -1,14 +1,15 @@
-import { Component, EventEmitter, Input, OnChanges, Output, Signal, SimpleChanges, inject } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, Signal, SimpleChanges, inject } from '@angular/core';
 import { tab, tabType } from './tabs.type';
+import { CacheService } from 'app/cache.service';
 
-
+export const SELECTEDTAB = 'SelectedTabId'
 
 @Component({
   selector: 'app-tabs',
   templateUrl: './tabs.component.html',
   styleUrl: './tabs.component.css'
 })
-export class TabsComponent implements OnChanges  {
+export class TabsComponent implements OnInit, OnChanges  {
 
   @Input() tabs: tab[];
   @Output() tabsChange: EventEmitter<tab[]> = new EventEmitter();
@@ -20,12 +21,23 @@ export class TabsComponent implements OnChanges  {
    TabType = tabType;
    
 
- 
-
- 
-
-  constructor() {
+  constructor(private cacheService: CacheService) {
     
+  }
+
+  ngOnInit(): void {
+    
+    //check cache for selected tab
+    let cache = this.cacheService.getCache(SELECTEDTAB);
+
+    if(cache?.data) {
+      
+          this.selectedTab = cache.data.tabType;
+          this.selectedID = cache.data.id;
+          this.tabData = cache.data.tabData;
+
+    }
+
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -74,6 +86,8 @@ export class TabsComponent implements OnChanges  {
     this.selectedID = tab.id
     this.selectedTab = tab.tabType
     this.tabData = tab.tabData
+
+    this.cacheService.setCache(SELECTEDTAB, {id: tab.id, tabType: tab.tabType, tabData: tab.tabData})
 
   }
 

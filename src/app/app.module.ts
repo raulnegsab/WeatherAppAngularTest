@@ -14,6 +14,7 @@ import {routing} from "./app.routing";
 import {HttpClientModule} from "@angular/common/http";
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { TabsComponent } from './tabs/tabs.component';
+import { TabTemplatesComponent } from './tab-templates/tab-templates.component';
 import { environment } from '../environments/environment';
 import { CacheService } from './cache.service';
 
@@ -25,6 +26,7 @@ import { CacheService } from './cache.service';
     CurrentConditionsComponent,
     MainPageComponent,
     TabsComponent,
+    TabTemplatesComponent
   ],
   imports: [
     BrowserModule,

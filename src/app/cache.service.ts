@@ -23,6 +23,9 @@ return JSON.parse(localStorage.getItem(label))
 }
 
  
+removeCache(label:string): void {
+    localStorage.removeItem(label);
+}
 
 
 
