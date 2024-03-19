@@ -8,6 +8,7 @@ import {Forecast} from './forecasts-list/forecast.type';
 import { LocationService } from './location.service';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { tap } from 'rxjs/operators';
+import { CacheService } from './cache.service';
 
 export const CONDITIONS : string = "conditions";
 export const FORECASTS : string = "forecasts";
@@ -24,7 +25,9 @@ export class WeatherService {
   cacheTime: number =  this.minutesOrSeconds('minutes', 120); //2 hours  this.minutesOrSeconds('seconds', 30)
 
 
-  constructor(private http: HttpClient, private locService: LocationService) { 
+  constructor(private http: HttpClient, 
+              private locService: LocationService,
+              private cacheService: CacheService) { 
     
 
     locService.locations$.subscribe(zips => {
@@ -37,8 +40,8 @@ export class WeatherService {
   addCurrentConditions(zipcode: string): void {
 
     //cache check
-    let LocationCache = localStorage.getItem(CONDITIONS);
-    let condData = LocationCache ? JSON.parse(LocationCache).data : [];
+    let LocationCache = this.cacheService.getCache(CONDITIONS);
+    let condData = LocationCache?.data ? LocationCache.data : [];
     let exists: boolean = false;
     let conditionReturn: ConditionsAndZip;
     let validationTime = null;
@@ -69,7 +72,7 @@ export class WeatherService {
         //update cache   
         let newConditionData = condData.filter((v:any) => v.condition.zip != zipcode);                                                                                                    //2 hours 
         newConditionData.push({ condition: {zip: zipcode, data}, validThru: new Date(new Date().getTime() + this.cacheTime) } )
-        localStorage.setItem(CONDITIONS, JSON.stringify({ data: newConditionData }));
+        this.cacheService.setCache(CONDITIONS, newConditionData);
 
          return [...conditions, {zip: zipcode, data}] 
         
@@ -99,8 +102,8 @@ export class WeatherService {
   getForecast(zipcode: string): Observable<Forecast> {
 
     //cache check
-    let cache = localStorage.getItem(FORECASTS);
-    let forecastData = cache ? JSON.parse(cache).data : [];
+    let cache = this.cacheService.getCache(FORECASTS);
+    let forecastData = cache?.data ? cache.data : [];
     let exists: boolean = false;
     let forecastReturn: Forecast;
     let validationTime = null;
@@ -134,7 +137,8 @@ export class WeatherService {
         //cache clean and update
         let newForecastData = forecastData.filter((v:any) => v.zip != zipcode);
         newForecastData.push({zip: zipcode, forecast: data, validThru: new Date(new Date().getTime() + this.cacheTime) })
-        localStorage.setItem(FORECASTS, JSON.stringify({data: newForecastData}))
+        this.cacheService.setCache(FORECASTS, newForecastData)
+        
 
               })
 

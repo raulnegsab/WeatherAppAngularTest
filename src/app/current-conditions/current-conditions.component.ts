@@ -1,4 +1,4 @@
-import {Component, inject, Signal, TemplateRef, ViewChild} from '@angular/core';
+import {Component, inject, OnInit, Signal, TemplateRef, ViewChild} from '@angular/core';
 import {WeatherService} from "../weather.service";
 import {LocationService} from "../location.service";
 import {Router} from "@angular/router";
@@ -10,7 +10,7 @@ import { tab } from 'app/tabs/tabs.type';
   templateUrl: './current-conditions.component.html',
   styleUrls: ['./current-conditions.component.css']
 })
-export class CurrentConditionsComponent  {
+export class CurrentConditionsComponent implements OnInit  {
 
   private weatherService = inject(WeatherService);
   private router = inject(Router);
@@ -35,6 +35,10 @@ export class CurrentConditionsComponent  {
             
           });
  
+  }
+
+  ngOnInit(): void {
+    this.locationService.checkCachedLocations();
   }
 
 

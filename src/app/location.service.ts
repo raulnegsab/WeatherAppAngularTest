@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { CacheService } from './cache.service';
 
 export const LOCATIONS : string = "locations";
 
@@ -10,7 +11,7 @@ export class LocationService {
  private locations = new BehaviorSubject<string[]>([]);
  get locations$(): Observable<string[]> { return this.locations.asObservable() } 
   
-  constructor() {
+  constructor(private cacheService: CacheService) {
   
   }
 
@@ -25,7 +26,14 @@ export class LocationService {
     if(x.includes(zipcode))
         return;
 
+    //update cache
+    this.cacheService.setCache(LOCATIONS, [...x, zipcode])
+
     this.locations.next([...x, zipcode]);
+
+   
+
+
    
     
   }
@@ -41,12 +49,20 @@ export class LocationService {
     if (index !== -1){
       zipcodeList.splice(index, 1);
       this.locations.next(zipcodeList)
+
+      //update cache
+      this.cacheService.setCache(LOCATIONS, zipcodeList);
      
     }
   }
 
  
-
+checkCachedLocations() {
+  let locationCache = this.cacheService.getCache(LOCATIONS)
+  if(locationCache?.data) {
+    this.locations.next(locationCache.data);
+  }
+}
 
 
 }
