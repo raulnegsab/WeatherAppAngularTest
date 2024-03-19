@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, Output, Signal, SimpleChanges, inject } from '@angular/core';
-import { tab } from './tabs.type';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { tab, tabType } from './tabs.type';
+
 
 
 @Component({
@@ -13,31 +13,35 @@ export class TabsComponent implements OnChanges  {
   @Input() tabs: tab[];
   @Output() tabsChange: EventEmitter<tab[]> = new EventEmitter();
 
-  protected selectedHTML: SafeHtml = ""
+  protected selectedTab: tabType = null
   protected selectedID: string = ""
+  protected tabData: any;
+
+   TabType = tabType;
+   
 
  
 
  
 
-  constructor(private sanitizer: DomSanitizer) {
+  constructor() {
     
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     
     //if the selected tab gets removed set the first tab in the array as the selected tab
-    if(this.tabs.length > 0 && this.selectedHTML == '' && this.selectedID == "") {
-      this.selectedHTML = this.sanitizeHtml(this.tabs[0].innerHtml);
+    if(this.tabs.length > 0 && this.selectedTab == null && this.selectedID == "") {
+      this.selectedTab = this.tabs[0].tabType;
       this.selectedID = this.tabs[0].id;
+      this.tabData = this.tabs[0].tabData;
+
     }
+
+    console.log(this.tabData)
     
   }
 
-
-  sanitizeHtml(html: string): SafeHtml {
-    return this.sanitizer.bypassSecurityTrustHtml(html);
-  }
 
   trackById(index: number, item: tab): string {
     return item.id;
@@ -50,7 +54,8 @@ export class TabsComponent implements OnChanges  {
 
     if(tab.id == this.selectedID) {
         this.selectedID = ''
-        this.selectedHTML = ''
+        this.selectedTab = null
+        this.tabData = null
     }
 
     this.tabsChange.emit(newTabs);
@@ -67,7 +72,8 @@ export class TabsComponent implements OnChanges  {
     return;
 
     this.selectedID = tab.id
-    this.selectedHTML = this.sanitizeHtml(tab.innerHtml)
+    this.selectedTab = tab.tabType
+    this.tabData = tab.tabData
 
   }
 

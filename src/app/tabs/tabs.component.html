@@ -4,6 +4,39 @@
    <div (click)="handleSelect(tab)" style="margin-left: 10px;"> {{tab.title}} ({{tab.id}}) <span class="close" (click)="handleRemove(tab)" style="color:white !important">X</span> </div>
   </div>
 </div>
-<div class="row tab-container" [innerHtml]="selectedHTML">
+<div class="row tab-container" >
+
+
+
+    <ng-container #conditions *ngIf="selectedTab === TabType.Conditions" >
+      <div class="row-flex well" (click)="tabData.showForecast(tabData.value.zip)">
+      <div class="col-flex">
+        <h3>{{ tabData.value.data.name  }}   {{tabData.value.data.name}} ({{tabData.value.zip}})</h3>
+        <h4>Current conditions: {{tabData.value.data.weather[0].main}}</h4>
+        <h4>Temperatures today:</h4>
+        <p>
+          Current {{tabData.value.data.main.temp | number:'.0-0'}}
+          - Max {{tabData.value.data.main.temp_max | number:'.0-0'}}
+          - Min {{tabData.value.data.main.temp_min | number:'.0-0'}}
+        </p>
+        <p>
+          <a [routerLink]="['/forecast', tabData.value.zip]" >Show 5-day forecast for {{tabData.value.data.name}}</a>
+        </p>
+      </div>
+      <div class="col-flex">
+       
+        <img [src]="tabData.icon">
+      </div>
+
+    </div>
+
+    </ng-container>
+
+
+    <!--  Now i can add as many tab html templates that i want and even whole components if i wish   -->
+
+
+
+
 
 </div>
