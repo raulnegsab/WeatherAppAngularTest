@@ -46,6 +46,7 @@ export class TabsComponent implements OnInit, OnChanges  {
       this.selectedTab = this.tabs[0].tabType;
       this.selectedID = this.tabs[0].id;
       this.tabData = this.tabs[0].tabData;
+      this.cacheService.setCache(SELECTEDTAB, {id: this.tabs[0].id, tabType: this.tabs[0].tabType, tabData: this.tabs[0].tabData})
 
     }
 
@@ -74,6 +75,10 @@ export class TabsComponent implements OnInit, OnChanges  {
         this.selectedID = ''
         this.selectedTab = null
         this.tabData = null
+    }
+
+    if(newTabs.length == 0) {
+        this.cacheService.removeCache(SELECTEDTAB);
     }
 
     this.tabsChange.emit(newTabs);
