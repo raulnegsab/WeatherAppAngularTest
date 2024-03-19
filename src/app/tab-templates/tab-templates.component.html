@@ -2,7 +2,7 @@
 <ng-container>
 
 
-<ng-container #conditions *ngIf="tabType === tabTypeEnum.Conditions" >
+<ng-container #conditions *ngIf="tabType === tabTypeEnum.Conditions && tabData != null" >
     <div class="row-flex well" (click)="tabData.showForecast(tabData.value.zip)">
     <div class="col-flex">
       <h3> {{tabData.value.data.name}} ({{tabData.value.zip}})</h3>

@@ -34,7 +34,6 @@ export class TabsComponent implements OnInit, OnChanges  {
       
           this.selectedTab = cache.data.tabType;
           this.selectedID = cache.data.id;
-          this.tabData = cache.data.tabData;
 
     }
 
@@ -50,7 +49,14 @@ export class TabsComponent implements OnInit, OnChanges  {
 
     }
 
-    console.log(this.tabData)
+    if(this.tabs.length > 0 && this.selectedTab != null && this.selectedID != "" && this.tabData == null) {
+      this.tabs.forEach(tab => {
+            if(tab.id == this.selectedID)
+              this.tabData = tab.tabData
+      })
+    }
+
+   // console.log(this.tabData)
     
   }
 
