@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, Signal, SimpleChanges, inject } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { tab, tabType } from './tabs.type';
 import { CacheService } from 'app/cache.service';
 
@@ -9,7 +9,7 @@ export const SELECTEDTAB = 'SelectedTabId'
   templateUrl: './tabs.component.html',
   styleUrl: './tabs.component.css'
 })
-export class TabsComponent implements OnInit, OnChanges  {
+export class TabsComponent implements OnChanges  {
 
   @Input() tabs: tab[];
   @Output() tabsChange: EventEmitter<tab[]> = new EventEmitter();
@@ -22,22 +22,18 @@ export class TabsComponent implements OnInit, OnChanges  {
    
 
   constructor(private cacheService: CacheService) {
+     //check cache for selected tab
+     let cache = this.cacheService.getCache(SELECTEDTAB);
     
+
+     if(cache?.data) {
+       
+           this.selectedTab = cache.data.tabType;
+           this.selectedID = cache.data.id;
+
+     }
   }
 
-  ngOnInit(): void {
-    
-    //check cache for selected tab
-    let cache = this.cacheService.getCache(SELECTEDTAB);
-
-    if(cache?.data) {
-      
-          this.selectedTab = cache.data.tabType;
-          this.selectedID = cache.data.id;
-
-    }
-
-  }
 
   ngOnChanges(changes: SimpleChanges): void {
     
@@ -47,9 +43,9 @@ export class TabsComponent implements OnInit, OnChanges  {
       this.selectedID = this.tabs[0].id;
       this.tabData = this.tabs[0].tabData;
       this.cacheService.setCache(SELECTEDTAB, {id: this.tabs[0].id, tabType: this.tabs[0].tabType, tabData: this.tabs[0].tabData})
-
     }
 
+    //had a problem with data bindings after cache. This is a solution i came up with.
     if(this.tabs.length > 0 && this.selectedTab != null && this.selectedID != "" && this.tabData == null) {
       this.tabs.forEach(tab => {
             if(tab.id == this.selectedID)
