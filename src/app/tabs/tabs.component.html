@@ -5,11 +5,12 @@
   </div>
 </div>
 <div class="row tab-container" >
+  <ng-content>
 
 
-    <!--  Now i can add as many tab html templates that i want and even whole components if i wish   -->
-    <app-tab-templates [(tabData)]="tabData" [(tabType)]="selectedTab" ></app-tab-templates>
 
+  </ng-content>
 
-    
+  
+
 </div>

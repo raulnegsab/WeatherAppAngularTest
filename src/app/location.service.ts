@@ -40,12 +40,12 @@ export class LocationService {
 
   removeLocation(zipcode : string) {
 
-    var x = []
+    var x:string[] = []
 
     this.locations.subscribe(v => {x = [...v]})
 
     let index = x.indexOf(zipcode);
-    var zipcodeList = [...x]
+    var zipcodeList: string[] = [...x]
     if (index !== -1){
       zipcodeList.splice(index, 1);
       this.locations.next(zipcodeList)
@@ -58,9 +58,9 @@ export class LocationService {
 
  
 checkCachedLocations() {
-  let locationCache = this.cacheService.getCache(LOCATIONS)
-  if(locationCache?.data) {
-    this.locations.next(locationCache.data);
+  let locationCache = this.cacheService.getCache(LOCATIONS) as string[]
+  if(locationCache.length > 0) {
+    this.locations.next(locationCache);
   }
 }
 

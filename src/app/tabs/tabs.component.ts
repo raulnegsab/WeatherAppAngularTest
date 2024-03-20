@@ -1,7 +1,8 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, ContentChildren, EventEmitter, Input, OnChanges, Output,  QueryList,  SimpleChanges } from '@angular/core';
 import { tab, tabType } from './tabs.type';
 import { CacheService } from 'app/cache.service';
-
+import { TabFamilyDirective } from './tab-family.directive';
+import { TabTemplatesComponent } from 'app/tab-templates/tab-templates.component';
 export const SELECTEDTAB = 'SelectedTabId'
 
 @Component({
@@ -11,49 +12,61 @@ export const SELECTEDTAB = 'SelectedTabId'
 })
 export class TabsComponent implements OnChanges  {
 
-  @Input() tabs: tab[];
-  @Output() tabsChange: EventEmitter<tab[]> = new EventEmitter();
+  tabs: tab[] = [];
+ 
 
   protected selectedTab: tabType = null
   protected selectedID: string = ""
-  protected tabData: any;
 
    TabType = tabType;
+
+   @ContentChildren(TabTemplatesComponent, { descendants: true }) contentChildren!: QueryList<TabTemplatesComponent>;
+
+ 
+
+  ngAfterContentInit() {
+    // Now you can access the projected content's attributes via the directives
+   
+    this.contentChildren.forEach((children) => {
+
+      console.log(children)
+
+
+     this.tabs.push({id: children.id, title: children.title, onTabRemove: children.remove} as tab)
+
+    
+    });
+
+    let cache = this.cacheService.getCache(SELECTEDTAB) as string;
+    
+    if(cache != null) {
+      this.selectedID = cache;
+      this.setActiveTab(cache);
+    }
+
+    this.contentChildren.changes.subscribe((items: QueryList<TabTemplatesComponent>) => {
+      // Handle the updated list items here
+      let newTabs: tab[] =[]
+      let activeId: string = ''
+      items.forEach((children) => {
+       
+       newTabs.push({id: children.id, title: children.title, onTabRemove: children.remove} as tab)
+      });
+
+      this.tabs = [...newTabs]
+
+    });
+  }
    
 
-  constructor(private cacheService: CacheService) {
-     //check cache for selected tab
-     let cache = this.cacheService.getCache(SELECTEDTAB);
-    
-
-     if(cache?.data) {
-       
-           this.selectedTab = cache.data.tabType;
-           this.selectedID = cache.data.id;
-
-     }
+  constructor(private cacheService: CacheService, private cdr: ChangeDetectorRef) {
+     
+   
   }
 
-
   ngOnChanges(changes: SimpleChanges): void {
-    
-    //if the selected tab gets removed set the first tab in the array as the selected tab
-    if(this.tabs.length > 0 && this.selectedTab == null && this.selectedID == "") {
-      this.selectedTab = this.tabs[0].tabType;
-      this.selectedID = this.tabs[0].id;
-      this.tabData = this.tabs[0].tabData;
-      this.cacheService.setCache(SELECTEDTAB, {id: this.tabs[0].id, tabType: this.tabs[0].tabType, tabData: this.tabs[0].tabData})
-    }
-
-    //had a problem with data bindings after cache. This is a solution i came up with.
-    if(this.tabs.length > 0 && this.selectedTab != null && this.selectedID != "" && this.tabData == null) {
-      this.tabs.forEach(tab => {
-            if(tab.id == this.selectedID)
-              this.tabData = tab.tabData
-      })
-    }
-
-   // console.log(this.tabData)
+ 
+  
     
   }
 
@@ -69,19 +82,27 @@ export class TabsComponent implements OnChanges  {
 
     if(tab.id == this.selectedID) {
         this.selectedID = ''
-        this.selectedTab = null
-        this.tabData = null
+        
+    }
+
+    if(this.tabs.length > 0 && this.selectedID == "") {
+      this.selectedID = this.tabs[0].id;
+      this.cacheService.setCache(SELECTEDTAB, this.tabs[0].id)
+      
+    }
+
+
+    if (typeof tab.onTabRemove === "function") {
+      tab.onTabRemove(tab.id);
     }
 
     if(newTabs.length == 0) {
         this.cacheService.removeCache(SELECTEDTAB);
     }
 
-    this.tabsChange.emit(newTabs);
+    this.tabs = [...newTabs];
 
-    if (typeof tab.onRemove === "function") {
-      tab.onRemove(tab);
-    }
+    
 
 
   }
@@ -90,12 +111,27 @@ export class TabsComponent implements OnChanges  {
     if(tab.id == this.selectedID) 
     return;
 
+    this.setActiveTab(tab.id)
+
     this.selectedID = tab.id
-    this.selectedTab = tab.tabType
-    this.tabData = tab.tabData
+    //this.selectedTab = tab.tabType
+    this.cacheService.setCache(SELECTEDTAB, tab.id);
+   
 
-    this.cacheService.setCache(SELECTEDTAB, {id: tab.id, tabType: tab.tabType, tabData: tab.tabData})
+  }
 
+
+  setActiveTab(id: string): void {
+    this.contentChildren.forEach((children) => {
+      // React to changes
+
+         if(id == children.id) {
+            children.isActive = true;
+         }
+         else {
+          children.isActive = false;
+         }
+    });
   }
 
 }

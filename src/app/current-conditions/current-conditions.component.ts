@@ -4,6 +4,7 @@ import {LocationService} from "../location.service";
 import {Router} from "@angular/router";
 import {ConditionsAndZip} from '../conditions-and-zip.type';
 import { tab, tabType } from 'app/tabs/tabs.type';
+import { TabFamilyDirective } from 'app/tabs/tab-family.directive';
 
 @Component({
   selector: 'app-current-conditions',
@@ -28,17 +29,7 @@ export class CurrentConditionsComponent implements OnInit  {
 
           this.weatherService.currentData.subscribe(loc => {
 
-            this.tabs = []
-            loc.forEach(val => {                                                                                            //Code that will run when the tab is removed. Its not necessary for removing the tab.
-              var tab: tab = {id: val.zip, title: val.data.name.replace(/"/g, ''), tabType: tabType.Conditions, onRemove: this.RemoveLogic.bind(this),
-              tabData: {value: val, 
-                icon: this.weatherService.getWeatherIcon(val.data.weather[0].id),
-              showForecast: this.showForecast.bind(this)
-              }
-              
-            }; 
-              this.tabs.push(tab);
-            })
+         
             
           });
  
@@ -49,9 +40,12 @@ export class CurrentConditionsComponent implements OnInit  {
   }
 
 
-  RemoveLogic(tab: tab) {
-    this.locationService.removeLocation(tab.id);
+  RemoveLogic(id: string) {
+    console.log("run")
+    this.locationService.removeLocation(id);
   }
+
+ 
 
 
  

@@ -17,6 +17,7 @@ import { TabsComponent } from './tabs/tabs.component';
 import { TabTemplatesComponent } from './tab-templates/tab-templates.component';
 import { environment } from '../environments/environment';
 import { CacheService } from './cache.service';
+import { TabFamilyDirective } from './tabs/tab-family.directive';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,9 @@ import { CacheService } from './cache.service';
     CurrentConditionsComponent,
     MainPageComponent,
     TabsComponent,
-    TabTemplatesComponent
+    TabTemplatesComponent,
+    TabFamilyDirective
+
   ],
   imports: [
     BrowserModule,

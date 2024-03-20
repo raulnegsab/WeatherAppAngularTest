@@ -40,23 +40,28 @@ export class WeatherService {
   addCurrentConditions(zipcode: string): void {
 
     //cache check
-    let LocationCache = this.cacheService.getCache(CONDITIONS);
-    let condData = LocationCache?.data ? LocationCache.data : [];
+    let condData: WeatherCondCache[] = this.cacheService.getCache(CONDITIONS) as WeatherCondCache[] ?? [];
     let exists: boolean = false;
     let conditionReturn: ConditionsAndZip;
     let validationTime = null;
 
-    condData.forEach((v:any) => {
+    console.log(condData)
 
-      if(v.condition.zip == zipcode) {
-        exists = true
+    if(condData.length > 0) {
 
-        conditionReturn = v.condition;
-        validationTime = new Date(v.validThru);
-        
-      }
+      condData.forEach((v:WeatherCondCache) => {
 
-    }); 
+        if(v.condition.zip == zipcode) {
+          exists = true
+  
+          conditionReturn = v.condition;
+          validationTime = new Date(v.validThru);
+          
+        }
+  
+      });
+    }
+     
 
     //if cached and not expired then dont run http request
     if(exists && validationTime > new Date() ) {
@@ -67,10 +72,10 @@ export class WeatherService {
 
     // Here we make a request to get the current conditions data from the API. Note the use of backticks and an expression to insert the zipcode
     this.http.get<CurrentConditions>(`${WeatherService.URL}/weather?zip=${zipcode},us&units=imperial&APPID=${WeatherService.APPID}`)
-      .subscribe(data => this.currentConditions.update(conditions => {
+      .subscribe((data: CurrentConditions) => this.currentConditions.update(conditions => {
 
         //update cache   
-        let newConditionData = condData.filter((v:any) => v.condition.zip != zipcode);                                                                                                    //2 hours 
+        let newConditionData: WeatherCondCache[] = condData.filter((v:WeatherCondCache) => v.condition.zip != zipcode);                                                                                                    //2 hours 
         newConditionData.push({ condition: {zip: zipcode, data}, validThru: new Date(new Date().getTime() + this.cacheTime) } )
         this.cacheService.setCache(CONDITIONS, newConditionData);
 
@@ -102,13 +107,12 @@ export class WeatherService {
   getForecast(zipcode: string): Observable<Forecast> {
 
     //cache check
-    let cache = this.cacheService.getCache(FORECASTS);
-    let forecastData = cache?.data ? cache.data : [];
+    let forecastData =  this.cacheService.getCache(FORECASTS) as ForecastCache[] ?? [];
     let exists: boolean = false;
     let forecastReturn: Forecast;
     let validationTime = null;
 
-    forecastData.forEach((v:any) => {
+    forecastData.forEach((v:ForecastCache) => {
 
       if(v.zip == zipcode) {
         exists = true
@@ -132,10 +136,11 @@ export class WeatherService {
    
       // Here we make a request to get the forecast data from the API. Note the use of backticks and an expression to insert the zipcode
       return this.http.get<Forecast>(`${WeatherService.URL}/forecast/daily?zip=${zipcode},us&units=imperial&cnt=5&APPID=${WeatherService.APPID}`).pipe(
-        tap(data => {
+        tap((data: Forecast) => {
 
         //cache clean and update
-        let newForecastData = forecastData.filter((v:any) => v.zip != zipcode);
+        let newForecastData: ForecastCache[] = forecastData.filter((v:ForecastCache) => v.zip != zipcode);
+
         newForecastData.push({zip: zipcode, forecast: data, validThru: new Date(new Date().getTime() + this.cacheTime) })
         this.cacheService.setCache(FORECASTS, newForecastData)
         
@@ -187,6 +192,20 @@ export class WeatherService {
 
 
 }
+
+export interface ForecastCache {
+  zip: string, 
+  forecast: Forecast, 
+  validThru: Date
+}
+
+export interface WeatherCondCache {
+
+  condition: {zip: string, data: CurrentConditions}, 
+  validThru: Date
+
+}
+
 
 
 
