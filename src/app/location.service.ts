@@ -58,7 +58,7 @@ export class LocationService {
 
  
 checkCachedLocations() {
-  let locationCache = this.cacheService.getCache(LOCATIONS) as string[]
+  let locationCache = this.cacheService.getCache(LOCATIONS) as string[] ?? []
   if(locationCache.length > 0) {
     this.locations.next(locationCache);
   }

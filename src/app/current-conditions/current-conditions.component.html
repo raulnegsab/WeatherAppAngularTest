@@ -1,8 +1,10 @@
 <div>
-  <app-tabs >
+  <app-tabs>
     
   <ng-container *ngFor="let location of currentConditionsByZip()" >
-  <tab-item   [id]="location.zip" [title]="location.data.name" [remove]="RemoveLogic.bind(this)" >
+
+    <!-- tab-item holds an ng-content and can present any component or html through content projection. It however requires an id and a title  -->
+  <tab-item  [id]="location.zip" [title]="location.data.name" [remove]="RemoveLogic.bind(this)" >
     <div class="well flex" (click)="showForecast(location.zip)">
     <div>
       <h3>{{location.data.name}} ({{location.zip}})</h3>
@@ -22,6 +24,8 @@
     </div>
   </div>
 </tab-item>
+
+
 
 </ng-container>
 

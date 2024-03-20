@@ -43,7 +43,7 @@ export class WeatherService {
     let condData: WeatherCondCache[] = this.cacheService.getCache(CONDITIONS) as WeatherCondCache[] ?? [];
     let exists: boolean = false;
     let conditionReturn: ConditionsAndZip;
-    let validationTime = null;
+    let validationTime: Date = null;
 
     //console.log(condData)
 
@@ -110,7 +110,7 @@ export class WeatherService {
     let forecastData =  this.cacheService.getCache(FORECASTS) as ForecastCache[] ?? [];
     let exists: boolean = false;
     let forecastReturn: Forecast;
-    let validationTime = null;
+    let validationTime: Date = null;
 
     forecastData.forEach((v:ForecastCache) => {
 

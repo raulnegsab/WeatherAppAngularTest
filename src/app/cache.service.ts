@@ -2,12 +2,8 @@ import { Injectable } from '@angular/core';
 import { tabType } from './tabs/tabs.type';
 import { ForecastCache, WeatherCondCache } from './weather.service';
 
-type returnVal<T> = string | T[];
-
 @Injectable({providedIn: 'root'})
 export class CacheService {
-
-    
 
   constructor() {
   
