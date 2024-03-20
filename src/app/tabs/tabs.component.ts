@@ -20,6 +20,7 @@ export class TabsComponent implements OnChanges  {
 
    TabType = tabType;
 
+   //makes a list of all tab-items inside ng-content
    @ContentChildren(TabTemplatesComponent, { descendants: true }) contentChildren!: QueryList<TabTemplatesComponent>;
 
  
