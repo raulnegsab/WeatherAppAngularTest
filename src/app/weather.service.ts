@@ -45,7 +45,7 @@ export class WeatherService {
     let conditionReturn: ConditionsAndZip;
     let validationTime = null;
 
-    console.log(condData)
+    //console.log(condData)
 
     if(condData.length > 0) {
 

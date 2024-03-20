@@ -25,6 +25,11 @@ export class TabTemplatesComponent implements OnInit {
     if(this.id == cache && cache != null) {
         this.isActive = true;
     }
+    else if (cache == null) {
+      this.cacheService.setCache(SELECTEDTAB, this.id)
+        this.isActive = true
+    }
+
   }
 
 

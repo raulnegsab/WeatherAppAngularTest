@@ -29,20 +29,21 @@ export class TabsComponent implements OnChanges  {
    
     this.contentChildren.forEach((children) => {
 
-      console.log(children)
+     // console.log(children)
 
+     let cache = this.cacheService.getCache(SELECTEDTAB) as string;
+    
+    if(cache != null) {
+      this.selectedID = cache;
+     
+    }
 
      this.tabs.push({id: children.id, title: children.title, onTabRemove: children.remove} as tab)
 
     
     });
 
-    let cache = this.cacheService.getCache(SELECTEDTAB) as string;
     
-    if(cache != null) {
-      this.selectedID = cache;
-      this.setActiveTab(cache);
-    }
 
     this.contentChildren.changes.subscribe((items: QueryList<TabTemplatesComponent>) => {
       // Handle the updated list items here
@@ -52,6 +53,13 @@ export class TabsComponent implements OnChanges  {
        
        newTabs.push({id: children.id, title: children.title, onTabRemove: children.remove} as tab)
       });
+
+      let cache = this.cacheService.getCache(SELECTEDTAB) as string;
+    
+    if(cache != null) {
+      this.selectedID = cache;
+     
+    }
 
       this.tabs = [...newTabs]
 
@@ -82,14 +90,14 @@ export class TabsComponent implements OnChanges  {
 
     if(tab.id == this.selectedID) {
         this.selectedID = ''
-        
+        this.cacheService.removeCache(SELECTEDTAB);
     }
 
-    if(this.tabs.length > 0 && this.selectedID == "") {
-      this.selectedID = this.tabs[0].id;
-      this.cacheService.setCache(SELECTEDTAB, this.tabs[0].id)
+    // if(this.tabs.length > 0 && this.selectedID == "") {
+    //   this.selectedID = this.tabs[0].id;
+    //   this.cacheService.setCache(SELECTEDTAB, this.tabs[0].id)
       
-    }
+    // }
 
 
     if (typeof tab.onTabRemove === "function") {
@@ -115,7 +123,7 @@ export class TabsComponent implements OnChanges  {
 
     this.selectedID = tab.id
     //this.selectedTab = tab.tabType
-    this.cacheService.setCache(SELECTEDTAB, tab.id);
+    this.cacheService.setCache(SELECTEDTAB, tab.id as string);
    
 
   }

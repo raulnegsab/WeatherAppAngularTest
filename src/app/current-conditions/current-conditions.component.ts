@@ -41,7 +41,7 @@ export class CurrentConditionsComponent implements OnInit  {
 
 
   RemoveLogic(id: string) {
-    console.log("run")
+   // console.log("run")
     this.locationService.removeLocation(id);
   }
 
